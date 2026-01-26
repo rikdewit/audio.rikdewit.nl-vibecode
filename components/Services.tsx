@@ -1,0 +1,55 @@
+
+import React from 'react';
+import { Mic2, Speaker, Settings } from 'lucide-react';
+import { SERVICES } from '../constants';
+
+const IconMap: Record<string, React.ReactNode> = {
+  Mic2: <Mic2 strokeWidth={1} size={48} />,
+  Speaker: <Speaker strokeWidth={1} size={48} />,
+  Settings: <Settings strokeWidth={1} size={48} />,
+};
+
+const Services: React.FC = () => {
+  return (
+    <section id="diensten" className="py-32 px-6 bg-[#fafafa]">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-24 text-center flex flex-col items-center">
+          {/* Profile Photo - Round cutout */}
+          <div className="mb-12 relative">
+            <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 cursor-pointer">
+              <img 
+                src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400" 
+                alt="Rik de Wit" 
+                className="w-full h-full object-cover scale-110"
+              />
+            </div>
+            {/* Subtle decorative ring */}
+            <div className="absolute inset-0 rounded-full border border-black/5 -m-2 pointer-events-none" />
+          </div>
+
+          <h2 className="text-sm uppercase tracking-[0.4em] font-bold text-gray-400 mb-4">Mijn Expertise</h2>
+          <div className="w-12 h-px bg-black mx-auto" />
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-12 lg:gap-24">
+          {SERVICES.map((service) => (
+            <div 
+              key={service.id} 
+              className="group flex flex-col items-center text-center p-8 bg-white border border-transparent hover:border-gray-100 hover:shadow-xl transition-all duration-500 rounded-sm"
+            >
+              <div className="mb-8 text-black group-hover:scale-110 transition-transform duration-500">
+                {IconMap[service.icon]}
+              </div>
+              <h3 className="text-xl font-medium mb-6 tracking-wide mono uppercase">{service.title}</h3>
+              <p className="text-gray-500 font-light leading-relaxed">
+                {service.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Services;
