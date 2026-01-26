@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Mic2, Speaker, Settings } from 'lucide-react';
 import { SERVICES } from '../constants';
@@ -14,17 +13,17 @@ const Services: React.FC = () => {
     <section id="diensten" className="py-32 px-6 bg-[#fafafa]">
       <div className="max-w-7xl mx-auto">
         <div className="mb-24 text-center flex flex-col items-center">
-          {/* Profile Photo - Round cutout */}
-          <div className="mb-12 relative">
-            <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 cursor-pointer">
+          {/* Profile Photo - Round cutout with always-on color and subtle hover animation */}
+          <div className="mb-12 relative group">
+            <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl transition-all duration-500 ease-out hover:scale-[1.03] hover:rotate-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] cursor-pointer">
               <img 
                 src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400" 
                 alt="Rik de Wit" 
                 className="w-full h-full object-cover scale-110"
               />
             </div>
-            {/* Subtle decorative ring */}
-            <div className="absolute inset-0 rounded-full border border-black/5 -m-2 pointer-events-none" />
+            {/* Subtle decorative ring that expands on hover */}
+            <div className="absolute inset-0 rounded-full border border-black/5 -m-2 pointer-events-none group-hover:scale-110 transition-transform duration-700" />
           </div>
 
           <h2 className="text-sm uppercase tracking-[0.4em] font-bold text-gray-400 mb-4">Mijn Expertise</h2>
