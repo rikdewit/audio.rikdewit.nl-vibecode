@@ -13,7 +13,7 @@ const Contact: React.FC = () => {
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 relative z-10">
         <div>
           <h2 className="text-sm uppercase tracking-[0.4em] font-bold text-gray-500 mb-8">Neem Contact Op</h2>
-          <h3 className="text-5xl md:text-7xl font-light tracking-tighter mb-12">Laten we samenwerken aan uw geluid.</h3>
+          <h3 className="text-5xl md:text-7xl font-light tracking-tighter mb-12">Laten we samenwerken aan jouw geluid.</h3>
           
           <div className="space-y-8 mt-12">
             <a href="mailto:audio@rikdewit.nl" className="flex items-center gap-6 group cursor-pointer">
