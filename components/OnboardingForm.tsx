@@ -30,10 +30,10 @@ const OnboardingForm: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
 
   // --- EMAILJS CONFIGURATIE ---
-  // Vul hier je eigen gegevens in uit het EmailJS dashboard
-  const EMAILJS_SERVICE_ID = 'service_k3tk1lw'; // Vervang door jouw Service ID
-  const EMAILJS_TEMPLATE_ID = 'template_r6rg82d'; // Vervang door jouw Template ID
-  const EMAILJS_PUBLIC_KEY = 'lDC9vj_pKNBf2ZzyG'; // PLAK HIER JOUW PUBLIC KEY
+  const EMAILJS_SERVICE_ID = 'service_k3tk1lw'; 
+  const EMAILJS_TEMPLATE_ID = 'template_r6rg82d'; 
+  const EMAILJS_PUBLIC_KEY = 'lDC9vj_pKNBf2ZzyG'; 
+  const MIJN_EMAIL = 'audio@rikdewit.nl'; // Jouw e-mailadres voor de notificatie
 
   const progress = useMemo(() => {
     if (currentStep === 'success') return 100;
@@ -88,22 +88,44 @@ const OnboardingForm: React.FC = () => {
     try {
       const serviceMap: any = { 'live': 'Live Geluid', 'studio': 'Studio Opname', 'nabewerking': 'Nabewerking', 'advies': 'Advies', 'anders': 'Overig' };
       const projectDetailsHtml = formatProjectDetails(formData);
+      const customerEmail = formData['contact-email'];
+      const customerName = formData['contact-name'];
+      const projectType = serviceMap[formData['main-service']] || formData['main-service'];
 
-      const templateParams = {
-        to_name: "Rik de Wit",
-        customer_name: formData['contact-name'],
-        customer_email: formData['contact-email'],
+      // Basis parameters die voor beide e-mails hetzelfde zijn
+      const baseParams = {
+        customer_name: customerName,
+        customer_email: customerEmail,
         customer_phone: formData['contact-phone'],
         contact_preference: formData['contact-pref'],
-        project_type: serviceMap[formData['main-service']] || formData['main-service'],
+        project_type: projectType,
         project_details_html: projectDetailsHtml,
         customer_message: formData['hire-details'] || formData['event-details'] || formData['studio-details'] || formData['nabewerking-details'] || formData['anders-details'] || 'Geen extra toelichting.'
       };
 
+      // 1. Stuur e-mail naar Rik (Notificatie)
       await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        templateParams,
+        {
+          ...baseParams,
+          recipient_email: MIJN_EMAIL,
+          email_subject: `Nieuwe aanvraag: ${projectType} - ${customerName}`,
+          reply_to: customerEmail
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      // 2. Stuur e-mail naar Klant (Kopie/Bevestiging)
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          ...baseParams,
+          recipient_email: customerEmail,
+          email_subject: `Bevestiging van je aanvraag: ${projectType}`,
+          reply_to: MIJN_EMAIL
+        },
         EMAILJS_PUBLIC_KEY
       );
 
@@ -112,13 +134,7 @@ const OnboardingForm: React.FC = () => {
     } catch (error) {
       console.error("EmailJS Error:", error);
       setIsSending(false);
-      // Als de sleutel nog op de placeholder staat, tonen we toch succes voor de demo, 
-      // maar in productie gaat dit naar de error state.
-      if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-        setCurrentStep('success'); 
-      } else {
-        setCurrentStep('error');
-      }
+      setCurrentStep('error');
     }
   };
 
