@@ -12,7 +12,9 @@ const Contact: React.FC = () => {
       <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-24 relative z-10">
         <div>
           <h2 className="text-sm uppercase tracking-[0.5em] font-bold text-gray-500 mb-10">Contact</h2>
-          <h3 className="text-6xl md:text-8xl font-light tracking-tighter mb-16 leading-[0.9]">Laten we <span className="italic">samenwerken</span>.</h3>
+          <h3 className="text-6xl md:text-7xl font-light tracking-tighter mb-16 leading-[0.9]">
+            Laten we samenwerken aan een <span className="italic">beter geluid</span>.
+          </h3>
           
           <div className="space-y-10 mt-12">
             <a href="mailto:audio@rikdewit.nl" className="flex items-center gap-8 group cursor-pointer">
@@ -40,7 +42,7 @@ const Contact: React.FC = () => {
 
         <div className="flex flex-col justify-center">
           <div className="p-16 border border-white/10 bg-white/5 backdrop-blur-md rounded-sm shadow-2xl">
-            <h4 className="text-3xl font-light mb-10 mono uppercase tracking-widest">Volg de rit</h4>
+            <h4 className="text-3xl font-light mb-10 mono uppercase tracking-widest">Volg mij</h4>
             <div className="flex gap-10">
               <a href="https://www.instagram.com/rikdewit.audio" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors flex items-center gap-4 group">
                 <div className="p-4 border border-white/10 rounded-full group-hover:border-white/40 transition-colors">
