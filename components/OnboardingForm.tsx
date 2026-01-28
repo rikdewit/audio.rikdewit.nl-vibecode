@@ -1,6 +1,5 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
-import { Send, CheckCircle2, ArrowRight, ArrowLeft, Check, Mail, Phone, MessageSquare } from 'lucide-react';
+import { Send, CheckCircle2, ArrowRight, ArrowLeft, Check, Mail, Phone, MessageSquare, Sparkles } from 'lucide-react';
 
 // --- Types ---
 type StepId = 
@@ -30,7 +29,7 @@ const OnboardingForm: React.FC = () => {
   const progress = useMemo(() => {
     if (currentStep === 'success') return 100;
     if (currentStep === 'contact') return 95;
-    const stepWeight = 8;
+    const stepWeight = 6;
     const calculated = 10 + (stepHistory.length * stepWeight);
     return Math.min(calculated, 90);
   }, [stepHistory, currentStep]);
@@ -73,18 +72,16 @@ const OnboardingForm: React.FC = () => {
     }
 
     if (step === 'live-music-check') {
-      // Logic: "Nee" skips speakers and goes straight to equipment.
       return formData['has-live-music'] === 'ja' ? 'performers' : 'location-equipment';
     }
 
-    if (step === 'speakers-only') return 'location-equipment';
     if (step === 'performers') {
       const p = formData['performers'];
-      return (p === 'Band (2-5 personen)' || p === 'Band (6+ personen)' || p === 'band-small' || p === 'band-large') ? 'instruments' : 'location-equipment';
+      return (p === 'Band (2-5 personen)' || p === 'Band (6+ personen)') ? 'instruments' : 'location-equipment';
     }
     if (step === 'instruments') return 'location-equipment';
     if (step === 'location-equipment') {
-      return formData['equip-weet-niet'] || formData['equip-Weet ik niet'] ? 'location-name' : 'live-practical';
+      return (formData['equip-Weet ik niet'] || formData['equip-Niks aanwezig']) ? 'location-name' : 'live-practical';
     }
     if (step === 'location-name') return 'live-practical';
     if (step === 'live-practical') return 'contact';
@@ -95,7 +92,6 @@ const OnboardingForm: React.FC = () => {
     if (step === 'nabewerking-type') return 'nabewerking-details';
     if (step === 'nabewerking-details') return 'contact';
 
-    // --- Audio Advies Logic ---
     if (step === 'advies-who') return 'advies-goal';
     if (step === 'advies-goal') {
       const goal = formData['advies-goal'];
@@ -145,21 +141,23 @@ const OnboardingForm: React.FC = () => {
   const OptionCard = ({ label, isSelected, onClick, icon: Icon }: any) => (
     <div 
       onClick={onClick}
-      className={`relative overflow-hidden p-5 border cursor-pointer transition-all duration-300 rounded-sm group
-        ${isSelected ? 'border-black bg-white' : 'border-gray-100 bg-white hover:border-gray-400'}`}
+      className={`relative overflow-hidden p-6 border cursor-pointer transition-all duration-300 rounded-sm group
+        ${isSelected ? 'border-black bg-white shadow-lg translate-x-2' : 'border-gray-100 bg-white hover:border-gray-300'}`}
     >
       <div 
         className={`absolute inset-0 bg-gradient-to-r from-[#87E8A0]/10 to-[#71E2E4]/10 transition-all duration-500 ease-out
           ${isSelected ? 'w-full' : 'w-0 group-hover:w-full'}`} 
       />
       <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {Icon && <Icon size={18} strokeWidth={1.5} className={isSelected ? 'text-black' : 'text-gray-600'} />}
-          <span className={`mono text-xs uppercase tracking-widest font-medium ${isSelected ? 'text-black' : 'text-gray-600 group-hover:text-black'}`}>
+        <div className="flex items-center gap-6">
+          <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'bg-black border-black text-white' : 'border-gray-200 text-gray-400 group-hover:border-black group-hover:text-black'}`}>
+            {Icon ? <Icon size={14} /> : <Check size={14} className={isSelected ? 'opacity-100' : 'opacity-0'} />}
+          </div>
+          <span className={`mono text-sm uppercase tracking-widest font-bold ${isSelected ? 'text-black' : 'text-gray-500 group-hover:text-black'}`}>
             {label}
           </span>
         </div>
-        {isSelected && <Check size={16} className="text-black" />}
+        {isSelected && <Sparkles size={16} className="text-[#87E8A0] animate-pulse" />}
       </div>
     </div>
   );
@@ -167,37 +165,36 @@ const OnboardingForm: React.FC = () => {
   const CheckboxCard = ({ label, isSelected, onToggle }: any) => (
     <div 
       onClick={onToggle}
-      className={`relative overflow-hidden p-4 border cursor-pointer transition-all duration-300 rounded-sm group
-        ${isSelected ? 'border-black bg-white' : 'border-gray-100 bg-white hover:border-gray-300'}`}
+      className={`relative overflow-hidden p-5 border cursor-pointer transition-all duration-300 rounded-sm group
+        ${isSelected ? 'border-black bg-white shadow-md' : 'border-gray-100 bg-white hover:border-gray-300'}`}
     >
       <div className={`absolute inset-0 bg-gradient-to-r from-[#87E8A0]/5 to-[#71E2E4]/5 transition-all duration-500 ease-out
           ${isSelected ? 'w-full' : 'w-0 group-hover:w-full'}`} 
       />
-      <div className="relative z-10 flex items-center gap-4">
-        <div className={`w-5 h-5 border flex items-center justify-center transition-all duration-300
-          ${isSelected ? 'bg-black border-black scale-110' : 'border-gray-300 bg-white'}`}>
+      <div className="relative z-10 flex items-center gap-5">
+        <div className={`w-6 h-6 border flex items-center justify-center transition-all duration-300
+          ${isSelected ? 'bg-black border-black scale-110' : 'border-gray-300 bg-white group-hover:border-gray-400'}`}>
           {isSelected && <Check size={12} className="text-white" />}
         </div>
-        <span className={`mono text-[10px] uppercase tracking-widest font-medium transition-colors ${isSelected ? 'text-black' : 'text-gray-600 group-hover:text-black'}`}>
+        <span className={`mono text-xs uppercase tracking-widest font-bold transition-colors ${isSelected ? 'text-black' : 'text-gray-500 group-hover:text-black'}`}>
           {label}
         </span>
       </div>
     </div>
   );
 
-  const NavButton = ({ onClick, disabled, variant = 'primary', children, fullWidth = false }: any) => (
+  const NavButton = ({ onClick, disabled, variant = 'primary', children }: any) => (
     <button 
       onClick={onClick}
       disabled={disabled}
-      className={`px-8 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3 rounded-sm
-        ${fullWidth ? 'w-full' : ''}
+      className={`px-10 py-5 text-xs font-bold uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 rounded-sm
         ${variant === 'primary' 
-          ? 'bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400' 
+          ? 'bg-black text-white hover:bg-black/90 hover:scale-[1.02] active:scale-[0.98] shadow-xl disabled:bg-gray-200 disabled:text-gray-400 disabled:scale-100 disabled:shadow-none' 
           : 'border border-gray-300 text-gray-500 hover:border-black hover:text-black bg-white'}`}
     >
-      {variant === 'secondary' && <ArrowLeft size={14} />}
+      {variant === 'secondary' && <ArrowLeft size={16} />}
       {children}
-      {variant === 'primary' && <ArrowRight size={14} />}
+      {variant === 'primary' && <ArrowRight size={16} />}
     </button>
   );
 
@@ -205,9 +202,9 @@ const OnboardingForm: React.FC = () => {
     switch (currentStep) {
       case 'main':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wat kan ik voor je betekenen?</h2>
-            <div className="grid gap-3">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black leading-tight">Wat kan ik voor je <span className="italic">betekenen</span>?</h2>
+            <div className="grid gap-4">
               {[
                 { id: 'live', label: 'Live geluid voor een evenement' },
                 { id: 'studio', label: 'Studio opname' },
@@ -218,19 +215,19 @@ const OnboardingForm: React.FC = () => {
                 <OptionCard key={opt.id} label={opt.label} isSelected={formData['main-service'] === opt.id} onClick={() => updateFormData('main-service', opt.id)} />
               ))}
             </div>
-            <NavButton onClick={handleNext} disabled={!formData['main-service']}>Volgende</NavButton>
+            <NavButton onClick={handleNext} disabled={!formData['main-service']}>Ga Verder</NavButton>
           </div>
         );
 
       case 'live-type':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Hoe kan ik je helpen?</h2>
-            <div className="grid gap-3">
-              <OptionCard label="Ik organiseer een evenement - help me de juiste keuzes maken" isSelected={formData['live-type'] === 'organize'} onClick={() => updateFormData('live-type', 'organize')} />
-              <OptionCard label="Ik wil je direct inhuren voor een specifieke opdracht" isSelected={formData['live-type'] === 'hire'} onClick={() => updateFormData('live-type', 'hire')} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Hoe kan ik helpen?</h2>
+            <div className="grid gap-4">
+              <OptionCard label="Ik organiseer een evenement - help me met techniek" isSelected={formData['live-type'] === 'organize'} onClick={() => updateFormData('live-type', 'organize')} />
+              <OptionCard label="Ik wil je direct inhuren als technicus" isSelected={formData['live-type'] === 'hire'} onClick={() => updateFormData('live-type', 'hire')} />
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['live-type']}>Volgende</NavButton>
             </div>
@@ -239,14 +236,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'live-hire-role':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Voor welke rol?</h2>
-            <div className="grid gap-3">
-              {['Geluidstechnicus live event', 'Stagehand / crew', 'Audio systeemontwerp', 'Mixing / mastering', 'Anders'].map(role => (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">In welke rol?</h2>
+            <div className="grid gap-4">
+              {['FOH Technicus', 'Monitor Technicus', 'Stagehand / Crew', 'Systeemontwerper', 'Anders'].map(role => (
                 <OptionCard key={role} label={role} isSelected={formData['hire-role'] === role} onClick={() => updateFormData('hire-role', role)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['hire-role']}>Volgende</NavButton>
             </div>
@@ -255,15 +252,15 @@ const OnboardingForm: React.FC = () => {
 
       case 'live-hire-details':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Opdracht details</h2>
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Opdracht details</h2>
             <textarea 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light resize-none min-h-[150px] bg-transparent text-black placeholder:text-gray-400" 
-              placeholder="Beschrijf de opdracht: datum, locatie, budget..." 
+              className="w-full border-b border-gray-300 py-6 text-xl focus:border-black outline-none transition-colors font-light resize-none min-h-[250px] bg-transparent text-black placeholder:text-gray-300" 
+              placeholder="Datum, locatie, tijden en specifieke eisen..." 
               value={formData['hire-details'] || ''} 
               onChange={(e) => updateFormData('hire-details', e.target.value)} 
             />
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['hire-details']}>Volgende</NavButton>
             </div>
@@ -272,14 +269,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'live-event-type':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Type event?</h2>
-            <div className="grid gap-3">
-              {['Concert / Festival', 'Bedrijfsevent', 'Privéfeest', 'Anders'].map(t => (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Type event?</h2>
+            <div className="grid gap-4">
+              {['Concert / Festival', 'Bedrijfsevent', 'Privéfeest / Bruiloft', 'Presentatie / Congres'].map(t => (
                 <OptionCard key={t} label={t} isSelected={formData['event-type'] === t} onClick={() => updateFormData('event-type', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['event-type']}>Volgende</NavButton>
             </div>
@@ -288,47 +285,29 @@ const OnboardingForm: React.FC = () => {
 
       case 'live-music-check':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Komt er live muziek?</h2>
-            <div className="grid gap-3">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Is er live muziek?</h2>
+            <div className="grid gap-4">
               <OptionCard label="Ja, live muziek" isSelected={formData['has-live-music'] === 'ja'} onClick={() => updateFormData('has-live-music', 'ja')} />
-              <OptionCard label="Nee, alleen sprekers/presentatie" isSelected={formData['has-live-music'] === 'nee'} onClick={() => updateFormData('has-live-music', 'nee')} />
+              <OptionCard label="Nee, alleen spraak" isSelected={formData['has-live-music'] === 'nee'} onClick={() => updateFormData('has-live-music', 'nee')} />
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['has-live-music']}>Volgende</NavButton>
             </div>
           </div>
         );
 
-      case 'speakers-only':
-        return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Aantal sprekers?</h2>
-            <input 
-              type="number" 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light bg-transparent text-black" 
-              placeholder="Hoeveel microfoons zijn nodig?" 
-              value={formData['num-speakers'] || ''} 
-              onChange={(e) => updateFormData('num-speakers', e.target.value)} 
-            />
-            <div className="flex gap-4 pt-4">
-              <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData['num-speakers']}>Volgende</NavButton>
-            </div>
-          </div>
-        );
-
       case 'performers':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wie komt er optreden?</h2>
-            <div className="grid gap-3">
-              {['Solo artiest / DJ', 'Band (2-5 personen)', 'Band (6+ personen)', 'Meerdere acts'].map(p => (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Wie treedt er op?</h2>
+            <div className="grid gap-4">
+              {['Solo artiest / DJ', 'Duo / Trio', 'Band (2-5 personen)', 'Band (6+ personen)', 'Meerdere acts'].map(p => (
                 <OptionCard key={p} label={p} isSelected={formData['performers'] === p} onClick={() => updateFormData('performers', p)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['performers']}>Volgende</NavButton>
             </div>
@@ -337,14 +316,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'instruments':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Welke instrumenten?</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {['Drums', 'Bas', 'Gitaar / Keys', 'Zang', 'Blazers', 'Anders'].map(i => (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Welke instrumenten?</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {['Drums', 'Basgitaar', 'Gitaar', 'Keys / Piano', 'Zang', 'Blazers', 'Percussie', 'Elektronisch'].map(i => (
                 <CheckboxCard key={i} label={i} isSelected={formData[`instrument-${i}`]} onToggle={() => updateFormData(`instrument-${i}`, !formData[`instrument-${i}`])} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext}>Volgende</NavButton>
             </div>
@@ -353,14 +332,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'location-equipment':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wat is aanwezig op locatie?</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {['PA Systeem', 'Monitors', 'Backline', 'Podium', 'Weet ik niet', 'Niks aanwezig'].map(e => (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Aanwezig op locatie?</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {['Speakers (PA)', 'Mengtafel', 'Microfoons', 'Monitoren', 'Weet ik niet', 'Niks aanwezig'].map(e => (
                 <CheckboxCard key={e} label={e} isSelected={formData[`equip-${e}`]} onToggle={() => updateFormData(`equip-${e}`, !formData[`equip-${e}`])} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext}>Volgende</NavButton>
             </div>
@@ -369,62 +348,37 @@ const OnboardingForm: React.FC = () => {
 
       case 'location-name':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Naam van de locatie?</h2>
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Welke locatie?</h2>
             <input 
               type="text" 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light bg-transparent text-black" 
-              placeholder="Bijv. Paradiso Amsterdam" 
-              value={formData['location-name'] || ''} 
-              onChange={(e) => updateFormData('location-name', e.target.value)} 
+              className="border-b border-gray-300 py-6 text-2xl focus:border-black outline-none font-light bg-transparent text-black" 
+              placeholder="Naam van de locatie of evenement" 
+              value={formData['loc-name'] || ''} 
+              onChange={e => updateFormData('loc-name', e.target.value)} 
             />
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData['location-name']}>Volgende</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['loc-name']}>Volgende</NavButton>
             </div>
           </div>
         );
 
       case 'live-practical':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Praktische informatie</h2>
-            <div className="grid gap-6">
-               <div className="flex flex-col gap-1">
-                 <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Datum</label>
-                 <input 
-                   type="date" 
-                   className="border-b border-gray-300 py-3 focus:border-black outline-none font-light cursor-pointer bg-transparent text-black" 
-                   value={formData['event-date'] || ''} 
-                   onClick={(e) => (e.target as any).showPicker?.()}
-                   onChange={e => updateFormData('event-date', e.target.value)} 
-                 />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Praktische info</h2>
+            <div className="grid gap-10">
+               <div className="flex flex-col gap-2">
+                 <label className="mono text-xs uppercase text-gray-400 font-bold tracking-widest">Datum</label>
+                 <input type="date" className="border-b border-gray-300 py-4 text-xl focus:border-black outline-none font-light bg-transparent text-black" value={formData['event-date'] || ''} onChange={e => updateFormData('event-date', e.target.value)} />
                </div>
-               <div className="flex flex-col gap-1">
-                 <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Locatie</label>
-                 <input 
-                    type="text" 
-                    className="border-b border-gray-300 py-3 focus:border-black outline-none font-light bg-transparent text-black" 
-                    placeholder="Stad, Straat of Locatienaam" 
-                    value={formData['event-location'] || ''} 
-                    onChange={e => updateFormData('event-location', e.target.value)} 
-                 />
-               </div>
-               <div className="flex flex-col gap-1">
-                 <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Aantal Bezoekers</label>
-                 <input type="number" className="border-b border-gray-300 py-3 focus:border-black outline-none font-light bg-transparent text-black" value={formData['expected-visitors'] || ''} onChange={e => updateFormData('expected-visitors', e.target.value)} />
-               </div>
-               <div className="flex flex-col gap-1">
-                 <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Bijzonderheden</label>
-                 <textarea 
-                   className="border-b border-gray-300 py-3 focus:border-black outline-none font-light min-h-[140px] resize-none bg-transparent text-black" 
-                   placeholder="Overige wensen, technische bijzonderheden of specifieke tijden..." 
-                   value={formData['event-details'] || ''} 
-                   onChange={e => updateFormData('event-details', e.target.value)} 
-                 />
+               <div className="flex flex-col gap-2">
+                 <label className="mono text-xs uppercase text-gray-400 font-bold tracking-widest">Toelichting</label>
+                 <textarea className="border-b border-gray-300 py-4 text-xl focus:border-black outline-none font-light min-h-[150px] resize-none bg-transparent text-black" placeholder="Wat is verder belangrijk om te weten?" value={formData['event-details'] || ''} onChange={e => updateFormData('event-details', e.target.value)} />
                </div>
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext}>Volgende</NavButton>
             </div>
@@ -432,53 +386,71 @@ const OnboardingForm: React.FC = () => {
         );
 
       case 'studio-type':
-      case 'nabewerking-type':
-        const opts = currentStep === 'studio-type' 
-          ? ['Podcast opnemen', 'Live band opnemen', 'Voice over opnemen', 'Losse instrumenten opnemen', 'Anders']
-          : ['Muziek mixen/masteren', 'Audiobewerking onder beeld', 'Podcast editing', 'Anders'];
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wat zoek je precies?</h2>
-            <div className="grid gap-3">
-              {opts.map(o => (
-                <OptionCard key={o} label={o} isSelected={formData[currentStep] === o} onClick={() => updateFormData(currentStep, o)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Wat gaan we opnemen?</h2>
+            <div className="grid gap-4">
+              {['Zang / Vocals', 'Band / Instrumenten', 'Podcast / Stem', 'Voice-over'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['studio-type'] === t} onClick={() => updateFormData('studio-type', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData[currentStep]}>Volgende</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['studio-type']}>Volgende</NavButton>
             </div>
           </div>
         );
 
       case 'studio-details':
+        return (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Vertel meer over de sessie</h2>
+            <textarea className="w-full border-b border-gray-300 py-6 text-xl focus:border-black outline-none font-light min-h-[250px] resize-none bg-transparent text-black placeholder:text-gray-300" placeholder="Aantal personen, gewenste datum, doel van de opname..." value={formData['studio-details'] || ''} onChange={e => updateFormData('studio-details', e.target.value)} />
+            <div className="flex gap-6 pt-6">
+              <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['studio-details']}>Volgende</NavButton>
+            </div>
+          </div>
+        );
+
+      case 'nabewerking-type':
+        return (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Type nabewerking?</h2>
+            <div className="grid gap-4">
+              {['Mixing', 'Mastering', 'Podcast Editing', 'Restauratie / Ruisonderdrukking'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['nabewerking-type'] === t} onClick={() => updateFormData('nabewerking-type', t)} />
+              ))}
+            </div>
+            <div className="flex gap-6 pt-6">
+              <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['nabewerking-type']}>Volgende</NavButton>
+            </div>
+          </div>
+        );
+
       case 'nabewerking-details':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Vertel over je project</h2>
-            <textarea 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light resize-none min-h-[150px] bg-transparent text-black" 
-              placeholder="Aantal tracks, deadline en visie..." 
-              value={formData[currentStep] || ''} 
-              onChange={(e) => updateFormData(currentStep, e.target.value)} 
-            />
-            <div className="flex gap-4 pt-4">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Details nabewerking</h2>
+            <textarea className="w-full border-b border-gray-300 py-6 text-xl focus:border-black outline-none font-light min-h-[250px] resize-none bg-transparent text-black placeholder:text-gray-300" placeholder="Deadline, aantal tracks, specifieke wensen..." value={formData['nabewerking-details'] || ''} onChange={e => updateFormData('nabewerking-details', e.target.value)} />
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData[currentStep]}>Volgende</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['nabewerking-details']}>Volgende</NavButton>
             </div>
           </div>
         );
 
       case 'advies-who':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wie ben je?</h2>
-            <div className="grid gap-3">
-              {['Particulier', 'Band / Muzikant', 'Horeca / Locatie eigenaar', 'Bedrijf / Organisatie', 'Eventorganisator'].map(w => (
-                <OptionCard key={w} label={w} isSelected={formData['advies-who'] === w} onClick={() => updateFormData('advies-who', w)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Wie ben je?</h2>
+            <div className="grid gap-4">
+              {['Muzikant / Producer', 'Organisator', 'Bedrijf', 'Particulier'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['advies-who'] === t} onClick={() => updateFormData('advies-who', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-who']}>Volgende</NavButton>
             </div>
@@ -487,15 +459,15 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-goal':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Waar heb je hulp bij nodig?</h2>
-            <div className="grid gap-3">
-              <OptionCard label="Geluid voor een specifiek event" isSelected={formData['advies-goal'] === 'event'} onClick={() => updateFormData('advies-goal', 'event')} />
-              <OptionCard label="Mijn huidige geluid verbeteren" isSelected={formData['advies-goal'] === 'verbeteren'} onClick={() => updateFormData('advies-goal', 'verbeteren')} />
-              <OptionCard label="Eigen apparatuur aanschaffen" isSelected={formData['advies-goal'] === 'aanschaffen'} onClick={() => updateFormData('advies-goal', 'aanschaffen')} />
-              <OptionCard label="Anders / Weet nog niet" isSelected={formData['advies-goal'] === 'anders'} onClick={() => updateFormData('advies-goal', 'anders')} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Waar heb je advies bij nodig?</h2>
+            <div className="grid gap-4">
+              <OptionCard label="Technisch ontwerp voor een event" isSelected={formData['advies-goal'] === 'event'} onClick={() => updateFormData('advies-goal', 'event')} />
+              <OptionCard label="Aanschaf van eigen apparatuur" isSelected={formData['advies-goal'] === 'aanschaffen'} onClick={() => updateFormData('advies-goal', 'aanschaffen')} />
+              <OptionCard label="Optimalisatie van een ruimte" isSelected={formData['advies-goal'] === 'verbeteren'} onClick={() => updateFormData('advies-goal', 'verbeteren')} />
+              <OptionCard label="Iets anders" isSelected={formData['advies-goal'] === 'anders'} onClick={() => updateFormData('advies-goal', 'anders')} />
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-goal']}>Volgende</NavButton>
             </div>
@@ -504,14 +476,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-ruimte':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Om wat voor ruimte gaat het?</h2>
-            <div className="grid gap-3">
-              {['Horeca / Winkel', 'Kantoor / Vergaderruimte', 'Muziekstudio', 'Thuis / Woonkamer', 'Anders'].map(r => (
-                <OptionCard key={r} label={r} isSelected={formData['advies-ruimte'] === r} onClick={() => updateFormData('advies-ruimte', r)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Welke ruimte?</h2>
+            <div className="grid gap-4">
+              {['Home Studio', 'Kantoor / Vergaderruimte', 'Horeca / Venue', 'Oefenruimte'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['advies-ruimte'] === t} onClick={() => updateFormData('advies-ruimte', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-ruimte']}>Volgende</NavButton>
             </div>
@@ -520,24 +492,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-doel':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Wat is het doel?</h2>
-            <div className="grid gap-3">
-              {['Betere spraakverstaanbaarheid', 'Minder galm / echo', 'Geluidsisolatie', 'Betere beleving', 'Anders'].map(d => (
-                <OptionCard key={d} label={d} isSelected={formData['advies-doel'] === d} onClick={() => updateFormData('advies-doel', d)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Wat is het doel?</h2>
+            <div className="grid gap-4">
+              {['Geluidsisolatie', 'Akoestische behandeling', 'Speaker optimalisatie'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['advies-doel'] === t} onClick={() => updateFormData('advies-doel', t)} />
               ))}
             </div>
-            {formData['advies-doel'] && (
-              <div className="pt-4 animate-in fade-in slide-in-from-top-2 duration-500">
-                <textarea 
-                  className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light resize-none min-h-[100px] bg-transparent text-black" 
-                  placeholder="Omschrijf hier eventueel aanvullende doelen of wensen..." 
-                  value={formData['advies-doel-details'] || ''} 
-                  onChange={(e) => updateFormData('advies-doel-details', e.target.value)} 
-                />
-              </div>
-            )}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-doel']}>Volgende</NavButton>
             </div>
@@ -546,14 +508,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-methode':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Vorm van advies?</h2>
-            <div className="grid gap-3">
-              {['Meting op locatie', 'Adviesrapport', 'Systeemontwerp', 'Gewoon even sparren'].map(m => (
-                <OptionCard key={m} label={m} isSelected={formData['advies-methode'] === m} onClick={() => updateFormData('advies-methode', m)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Hoe spreken we elkaar?</h2>
+            <div className="grid gap-4">
+              {['Video Call', 'Op locatie (Eindhoven/Utrecht)', 'Telefonisch'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['advies-methode'] === t} onClick={() => updateFormData('advies-methode', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-methode']}>Volgende</NavButton>
             </div>
@@ -562,14 +524,14 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-gebruik':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Waarvoor ga je het gebruiken?</h2>
-            <div className="grid gap-3">
-              {['Live optredens', 'Studio werk', 'Podcast / Content creation', 'Anders'].map(g => (
-                <OptionCard key={g} label={g} isSelected={formData['advies-gebruik'] === g} onClick={() => updateFormData('advies-gebruik', g)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Waar ga je het voor gebruiken?</h2>
+            <div className="grid gap-4">
+              {['Live optredens', 'Recording / Studio', 'Hifi / Luisteren'].map(t => (
+                <OptionCard key={t} label={t} isSelected={formData['advies-gebruik'] === t} onClick={() => updateFormData('advies-gebruik', t)} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-gebruik']}>Volgende</NavButton>
             </div>
@@ -578,15 +540,10 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-kopen-details':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Details over aanschaf</h2>
-            <textarea 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light resize-none min-h-[150px] bg-transparent text-black" 
-              placeholder="Budget? Specifieke eisen?" 
-              value={formData['advies-kopen-details'] || ''} 
-              onChange={(e) => updateFormData('advies-kopen-details', e.target.value)} 
-            />
-            <div className="flex gap-4 pt-4">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Details aanschaf</h2>
+            <textarea className="w-full border-b border-gray-300 py-6 text-xl focus:border-black outline-none font-light min-h-[250px] resize-none bg-transparent text-black placeholder:text-gray-300" placeholder="Budget, reeds aanwezige gear, voorkeur voor merken..." value={formData['advies-kopen-details'] || ''} onChange={e => updateFormData('advies-kopen-details', e.target.value)} />
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <NavButton onClick={handleNext} disabled={!formData['advies-kopen-details']}>Volgende</NavButton>
             </div>
@@ -595,60 +552,55 @@ const OnboardingForm: React.FC = () => {
 
       case 'advies-kopen-type':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Huren of kopen?</h2>
-            <div className="grid gap-3">
-              {['Ik wil het zelf aanschaffen', 'Huren op lange termijn', 'Nog niet zeker'].map(k => (
-                <OptionCard key={k} label={k} isSelected={formData['advies-kopen-type'] === k} onClick={() => updateFormData('advies-kopen-type', k)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Wat wil je kopen?</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {['Speakers', 'Mengtafel', 'Microfoons', 'Interfaces', 'Bekabeling', 'Anders'].map(i => (
+                <CheckboxCard key={i} label={i} isSelected={formData[`kopen-type-${i}`]} onToggle={() => updateFormData(`kopen-type-${i}`, !formData[`kopen-type-${i}`])} />
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData['advies-kopen-type']}>Volgende</NavButton>
+              <NavButton onClick={handleNext}>Volgende</NavButton>
             </div>
           </div>
         );
 
       case 'anders-beschrijving':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Vertel wat je zoekt</h2>
-            <textarea 
-              className="w-full border-b border-gray-300 py-4 focus:border-black outline-none transition-colors font-light resize-none min-h-[200px] bg-transparent text-black" 
-              placeholder="Beschrijf je vraag of project..." 
-              value={formData['anders-beschrijving'] || ''} 
-              onChange={(e) => updateFormData('anders-beschrijving', e.target.value)} 
-            />
-            <div className="flex gap-4 pt-4">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Beschrijf je vraag</h2>
+            <textarea className="w-full border-b border-gray-300 py-6 text-xl focus:border-black outline-none font-light min-h-[250px] resize-none bg-transparent text-black placeholder:text-gray-300" placeholder="Waar heb je precies hulp bij nodig?" value={formData['anders-details'] || ''} onChange={e => updateFormData('anders-details', e.target.value)} />
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
-              <NavButton onClick={handleNext} disabled={!formData['anders-beschrijving']}>Volgende</NavButton>
+              <NavButton onClick={handleNext} disabled={!formData['anders-details']}>Volgende</NavButton>
             </div>
           </div>
         );
 
       case 'contact':
         return (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-2xl font-light tracking-tight text-black">Contactgegevens</h2>
-            <div className="grid gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Volledige Naam *</label>
-                <input type="text" className="border-b border-gray-300 py-3 focus:border-black outline-none font-light transition-colors bg-transparent text-black" placeholder="bijv. Jan de Vries" value={formData['contact-name'] || ''} onChange={e => updateFormData('contact-name', e.target.value)} />
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-light tracking-tight text-black">Contactgegevens</h2>
+            <div className="grid gap-8">
+              <div className="flex flex-col gap-3">
+                <label className="mono text-xs uppercase text-gray-500 font-bold tracking-widest">Naam *</label>
+                <input type="text" className="border-b border-gray-300 py-4 text-xl focus:border-black outline-none font-light bg-transparent text-black" value={formData['contact-name'] || ''} onChange={e => updateFormData('contact-name', e.target.value)} />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">E-mail *</label>
-                  <input type="email" className="border-b border-gray-300 py-3 focus:border-black outline-none font-light transition-colors bg-transparent text-black" placeholder="jan@voorbeeld.nl" value={formData['contact-email'] || ''} onChange={e => updateFormData('contact-email', e.target.value)} />
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="flex flex-col gap-3">
+                  <label className="mono text-xs uppercase text-gray-500 font-bold tracking-widest">E-mail *</label>
+                  <input type="email" className="border-b border-gray-300 py-4 text-xl focus:border-black outline-none font-light bg-transparent text-black" value={formData['contact-email'] || ''} onChange={e => updateFormData('contact-email', e.target.value)} />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Telefoon *</label>
-                  <input type="tel" className="border-b border-gray-300 py-3 focus:border-black outline-none font-light transition-colors bg-transparent text-black" placeholder="+31 6 ..." value={formData['contact-phone'] || ''} onChange={e => updateFormData('contact-phone', e.target.value)} />
+                <div className="flex flex-col gap-3">
+                  <label className="mono text-xs uppercase text-gray-500 font-bold tracking-widest">Telefoon *</label>
+                  <input type="tel" className="border-b border-gray-300 py-4 text-xl focus:border-black outline-none font-light bg-transparent text-black" value={formData['contact-phone'] || ''} onChange={e => updateFormData('contact-phone', e.target.value)} />
                 </div>
               </div>
               
-              <div className="flex flex-col gap-4 mt-4">
-                <label className="mono text-[10px] uppercase text-gray-600 font-bold tracking-widest">Voorkeur Contactmethode</label>
-                <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col gap-6 mt-6">
+                <label className="mono text-xs uppercase text-gray-400 font-bold tracking-widest">Contact voorkeur</label>
+                <div className="grid grid-cols-3 gap-4">
                   {[
                     { id: 'email', label: 'E-mail', icon: Mail },
                     { id: 'telefoon', label: 'Bellen', icon: Phone },
@@ -657,15 +609,15 @@ const OnboardingForm: React.FC = () => {
                     <div 
                       key={opt.id}
                       onClick={() => updateFormData('contact-pref', opt.id)}
-                      className={`relative overflow-hidden flex flex-col items-center justify-center p-4 border cursor-pointer transition-all rounded-sm gap-2 group
-                        ${formData['contact-pref'] === opt.id ? 'border-black bg-white' : 'border-gray-100 bg-white hover:border-gray-300'}`}
+                      className={`relative overflow-hidden flex flex-col items-center justify-center p-6 border cursor-pointer transition-all rounded-sm gap-3 group
+                        ${formData['contact-pref'] === opt.id ? 'border-black bg-white shadow-md' : 'border-gray-100 bg-white hover:border-gray-300'}`}
                     >
                       <div className={`absolute inset-0 bg-gradient-to-r from-[#87E8A0]/10 to-[#71E2E4]/10 transition-all duration-500 ease-out
                         ${formData['contact-pref'] === opt.id ? 'w-full' : 'w-0 group-hover:w-full'}`} 
                       />
-                      <div className="relative z-10 flex flex-col items-center gap-2">
-                        <opt.icon size={18} className={formData['contact-pref'] === opt.id ? 'text-black' : 'text-gray-400'} />
-                        <span className={`mono text-[9px] uppercase tracking-widest font-bold ${formData['contact-pref'] === opt.id ? 'text-black' : 'text-gray-600 group-hover:text-black'}`}>{opt.label}</span>
+                      <div className="relative z-10 flex flex-col items-center gap-3">
+                        <opt.icon size={24} className={formData['contact-pref'] === opt.id ? 'text-black' : 'text-gray-400'} />
+                        <span className={`mono text-[10px] uppercase tracking-widest font-bold ${formData['contact-pref'] === opt.id ? 'text-black' : 'text-gray-500'}`}>{opt.label}</span>
                       </div>
                     </div>
                   ))}
@@ -673,14 +625,14 @@ const OnboardingForm: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-6 pt-6">
               <NavButton variant="secondary" onClick={handleBack}>Terug</NavButton>
               <button 
                 onClick={handleNext} 
                 disabled={!isContactStepValid}
-                className="flex-grow bg-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.4em] disabled:bg-gray-200 flex items-center justify-center gap-3 transition-all hover:bg-black/90"
+                className="flex-grow bg-black text-white py-5 text-xs font-bold uppercase tracking-[0.4em] disabled:bg-gray-200 flex items-center justify-center gap-4 transition-all hover:bg-black/90 shadow-2xl"
               >
-                Aanvraag Verzenden <Send size={14} />
+                Aanvraag Versturen <Send size={16} />
               </button>
             </div>
           </div>
@@ -688,56 +640,59 @@ const OnboardingForm: React.FC = () => {
 
       case 'success':
         return (
-          <div className="text-center py-12 space-y-8 animate-in zoom-in duration-700">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-black mb-4">
-              <CheckCircle2 className="text-[#87E8A0]" size={48} strokeWidth={1} />
+          <div className="text-center py-20 space-y-10 animate-in zoom-in duration-700">
+            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-black mb-6 shadow-2xl relative">
+              <div className="absolute inset-0 rounded-full bg-[#87E8A0]/20 animate-ping duration-1000" />
+              <CheckCircle2 className="text-[#87E8A0] relative z-10" size={64} strokeWidth={1} />
             </div>
-            <h2 className="text-4xl font-light tracking-tight text-black">Aanvraag Ontvangen</h2>
-            <p className="text-gray-600 font-light max-w-md mx-auto leading-relaxed">
-              Bedankt voor het invullen van de briefing. Ik neem binnen 24 uur contact met je op om de details te bespreken.
+            <h2 className="text-5xl font-light tracking-tight text-black">Briefing Ontvangen</h2>
+            <p className="text-gray-500 text-xl font-light max-w-lg mx-auto leading-relaxed">
+              Bedankt voor de details. Ik kom binnen 24 uur bij je terug met een concreet voorstel.
             </p>
-            <button 
-              onClick={() => { setFormData({'contact-pref': 'email'}); setCurrentStep('main'); setStepHistory(['main']); }}
-              className="text-[10px] font-bold tracking-[0.3em] uppercase underline underline-offset-8 text-black hover:text-gray-400 transition-colors"
-            >
-              Nieuwe aanvraag starten
-            </button>
+            <div className="pt-10">
+                <button 
+                onClick={() => { setFormData({'contact-pref': 'email'}); setCurrentStep('main'); setStepHistory(['main']); }}
+                className="text-xs font-bold tracking-[0.4em] uppercase underline underline-offset-[12px] text-black hover:text-gray-400 transition-colors"
+                >
+                Nieuwe aanvraag
+                </button>
+            </div>
           </div>
         );
 
       default:
-        return <div className="text-center py-20 text-black"><h2 className="text-xl font-light">Laden...</h2></div>;
+        return null;
     }
   };
 
   return (
-    <section id="onboarding" className="py-24 md:py-32 px-6 bg-white overflow-hidden border-y border-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-5 gap-16 lg:gap-24 items-start">
+    <section id="diensten" className="min-h-screen flex items-center py-24 md:py-32 px-6 bg-white overflow-hidden border-y border-gray-50">
+      <div className="max-w-7xl mx-auto w-full">
+        <div className="grid lg:grid-cols-5 gap-16 lg:gap-24 items-center">
           
           {/* Left: Branding & Messaging */}
-          <div className="lg:col-span-2 lg:sticky lg:top-32 flex flex-col justify-between">
+          <div className="lg:col-span-2 lg:sticky lg:top-32 flex flex-col justify-center">
             <div className="flex flex-col">
-              <h2 className="text-[10px] uppercase tracking-[0.5em] font-bold text-gray-500 mb-8">Briefing Tool</h2>
-              <h3 className="text-4xl md:text-5xl font-light tracking-tighter leading-[1.05] mb-10 text-black">
-                Klaar om je geluid naar een <span className="italic">hoger niveau</span> te tillen?
+              <h2 className="text-xs uppercase tracking-[0.5em] font-bold text-gray-500 mb-10">Diensten</h2>
+              <h3 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tighter leading-[0.95] mb-12 text-black">
+                Klaar om je geluid naar een <br /><span className="italic">hoger niveau</span> te tillen?
               </h3>
-              <p className="text-gray-600 font-light text-lg mb-12 leading-relaxed max-w-md">
+              <p className="text-gray-500 font-light text-xl mb-16 leading-relaxed max-w-md">
                 Vul dit formulier in voor een vliegende start. Dit helpt mij om direct inzicht te krijgen in de technische eisen van jouw project.
               </p>
 
-              <div className="flex flex-col gap-8 border-l border-gray-200 pl-8 mt-8 lg:mt-16">
-                <div className={`transition-all duration-500 ${currentStep === 'main' ? 'opacity-100 translate-x-2' : 'opacity-40'}`}>
-                  <span className="mono text-[10px] block mb-1 text-gray-500">STAP 01</span>
-                  <span className="text-sm font-medium tracking-wide uppercase text-black">Dienst Selectie</span>
+              <div className="flex flex-col gap-10 border-l border-gray-200 pl-10 mt-8 lg:mt-16">
+                <div className={`transition-all duration-500 ${currentStep === 'main' ? 'opacity-100 translate-x-4 scale-105' : 'opacity-30'}`}>
+                  <span className="mono text-[10px] block mb-2 text-gray-500 font-bold">STAP 01</span>
+                  <span className="text-lg font-medium tracking-wide uppercase text-black">Dienst Selectie</span>
                 </div>
-                <div className={`transition-all duration-500 ${currentStep !== 'main' && currentStep !== 'contact' && currentStep !== 'success' ? 'opacity-100 translate-x-2' : 'opacity-40'}`}>
-                  <span className="mono text-[10px] block mb-1 text-gray-500">STAP 02</span>
-                  <span className="text-sm font-medium tracking-wide uppercase text-black">Technische Details</span>
+                <div className={`transition-all duration-500 ${currentStep !== 'main' && currentStep !== 'contact' && currentStep !== 'success' ? 'opacity-100 translate-x-4 scale-105' : 'opacity-30'}`}>
+                  <span className="mono text-[10px] block mb-2 text-gray-500 font-bold">STAP 02</span>
+                  <span className="text-lg font-medium tracking-wide uppercase text-black">Technische Details</span>
                 </div>
-                <div className={`transition-all duration-500 ${currentStep === 'contact' ? 'opacity-100 translate-x-2' : 'opacity-40'}`}>
-                  <span className="mono text-[10px] block mb-1 text-gray-500">STAP 03</span>
-                  <span className="text-sm font-medium tracking-wide uppercase text-black">Contact & Planning</span>
+                <div className={`transition-all duration-500 ${currentStep === 'contact' ? 'opacity-100 translate-x-4 scale-105' : 'opacity-30'}`}>
+                  <span className="mono text-[10px] block mb-2 text-gray-500 font-bold">STAP 03</span>
+                  <span className="text-lg font-medium tracking-wide uppercase text-black">Contact & Planning</span>
                 </div>
               </div>
             </div>
@@ -745,21 +700,27 @@ const OnboardingForm: React.FC = () => {
 
           {/* Right: The Interactive Form */}
           <div className="lg:col-span-3">
-            <div className="bg-gray-50 rounded-sm border border-gray-200 shadow-sm relative overflow-hidden min-h-[580px] flex flex-col">
-              <div className="h-[2px] w-full bg-gray-200 relative overflow-hidden">
+            <div className="bg-gray-50 rounded-sm border border-gray-200 shadow-2xl relative overflow-hidden min-h-[780px] flex flex-col transition-all duration-500">
+              <div className="h-[4px] w-full bg-gray-200 relative overflow-hidden">
                 <div 
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#87E8A0] to-[#71E2E4] transition-all duration-700 ease-out" 
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#87E8A0] via-[#71E2E4] to-[#87E8A0] transition-all duration-1000 ease-out bg-[length:200%_100%] animate-[gradient-shift_3s_linear_infinite]" 
                   style={{ width: `${progress}%` }}
                 />
               </div>
 
-              <div className={`p-8 md:p-12 lg:px-16 lg:pt-16 lg:pb-12 flex-grow transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+              <div className={`p-10 md:p-16 lg:p-20 flex-grow transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-8 blur-sm' : 'opacity-100 translate-y-0 blur-0'}`}>
                 {renderStepContent()}
               </div>
             </div>
           </div>
         </div>
       </div>
+      <style>{`
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 200% 50%; }
+        }
+      `}</style>
     </section>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LogoGraphic, LogoText } from '../constants';
 
@@ -94,7 +93,7 @@ const Hero: React.FC = () => {
               href="#diensten" 
               className="group flex flex-col items-center text-xs tracking-[0.4em] uppercase font-bold text-black"
             >
-              Ontdek Diensten
+              Start Je Project
               <div className="mt-6 w-[1px] h-12 sm:h-16 bg-black/30 group-hover:h-24 group-hover:bg-black transition-all duration-700" />
             </a>
           </div>

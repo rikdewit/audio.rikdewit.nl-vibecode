@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -14,8 +13,8 @@ function App() {
       <Navbar />
       <main>
         <Hero />
-        <Services />
         <OnboardingForm />
+        <Services />
         <Portfolio />
         <Contact />
       </main>
